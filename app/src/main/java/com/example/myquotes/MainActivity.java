@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     Box<Quote> quotesBox;
 
     List<Quote> quotesList = new ArrayList<>();
+    QuotesAdapter adapter;
+
     private final String TAG = "MainActivity";
 //    QuoteDBHelper dbHelper;
 
@@ -50,9 +52,11 @@ public class MainActivity extends AppCompatActivity {
 
 //        try {
 //            showQuotes(dbHelper.readQuotesFromDatabase());
-            showQuotes(quotesBox.getAll());
+        quotesList = quotesBox.getAll();
+            showQuotes();
 
-            Toast.makeText(MainActivity.this, "Quote read successful ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "Quote read successful \n" + quotesBox.count() +
+                    " Quotes found", Toast.LENGTH_SHORT).show();
 
 //        } catch (Exception e) {
 //            e.printStackTrace();
@@ -75,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
                     quotesList.add(quote);
 
-                    showQuotes(quotesList);
+                    showQuotes();
 
                 } else {
                     Snackbar.make(quoteEt, "Please write a Quote", Snackbar.LENGTH_SHORT).show();
@@ -107,9 +111,9 @@ public class MainActivity extends AppCompatActivity {
         return quote;
     }
 
-    private void showQuotes(List<Quote> quotesList) {
-        if (quotesList.size() > 0 && quotesList != null) {
-            QuotesAdapter adapter = new QuotesAdapter(MainActivity.this, quotesList);
+    private void showQuotes() {
+        if (quotesList != null || quotesList.size() > 0) {
+            adapter = new QuotesAdapter(MainActivity.this, quotesList);
 
             if (adapter.getItemCount() > 0) {
 
@@ -156,11 +160,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (item.getItemId() == R.id.deleteAllQuotes) {
             quotesBox.removeAll();
+            quotesList.clear();
 
             Log.d(TAG, "All quotes deleted ");
             Toast.makeText(MainActivity.this, "All quotes are deleted", Toast.LENGTH_SHORT).show();
 
-            showQuotes(new ArrayList<>());
+            showQuotes();
         }
 
         return super.onOptionsItemSelected(item);
