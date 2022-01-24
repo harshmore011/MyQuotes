@@ -14,6 +14,6 @@ public class ObjectBox {
                 .build();
     }
 
-    public static BoxStore get() { return boxStore; }
+    public static BoxStore getInstance() { return boxStore; }
 
 }

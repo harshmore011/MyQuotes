@@ -6,17 +6,25 @@ import io.objectbox.annotation.Id;
 @Entity
 public class Quote {
 
+    @Id
+    public long id;
+    public String quote, author, date;
+
+    public Quote() {}
+
     public Quote(String quote, String author, String date) {
         this.quote = quote;
         this.author = author;
         this.date = date;
     }
 
-    @Id
-    public long id;
-    public String quote, author, date;
+    public long getId() {
+        return id;
+    }
 
-    public Quote() {}
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getQuote() {
         return quote;

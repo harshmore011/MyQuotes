@@ -9,6 +9,6 @@ public class MyQuotesApplication extends Application {
         super.onCreate();
 
         // Initializing ObjectBox
-        ObjectBox.init(this);
+        ObjectBox.init(MyQuotesApplication.this);
     }
 }
