@@ -5,7 +5,7 @@
       <map>
         <entry key="app/src/main/res/drawable/ic_delete_24.xml" value="0.2140625" />
         <entry key="app/src/main/res/drawable/ic_edit_24.xml" value="0.2140625" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/item_quote.xml" value="0.33" />
         <entry key="app/src/main/res/menu/menu.xml" value="0.19791666666666666" />
       </map>

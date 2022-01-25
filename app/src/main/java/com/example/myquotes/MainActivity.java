@@ -2,6 +2,7 @@ package com.example.myquotes;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,6 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     Button saveQuoteBtn;
     RecyclerView recyclerView;
     String quoteText, authorText, date;
+    TextView addQuoteLayout;
+    ImageButton arrowBtnAddQ, arrowBtnMyQ;
 
     Box<Quote> quotesBox;
 
@@ -38,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     QuotesAdapter adapter;
 
     private final String TAG = "MainActivity";
+    CardView saveQuoteLayout;
 //    QuoteDBHelper dbHelper;
 
     @Override
@@ -46,6 +52,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initializeViews();
+
+        addQuoteLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (saveQuoteLayout.getVisibility() == View.GONE) {
+                    saveQuoteLayout.setVisibility(View.VISIBLE);
+                    arrowBtnAddQ.setImageResource(R.drawable.ic_arrow_up_24);
+                } else {
+                    saveQuoteLayout.setVisibility(View.GONE);
+                    arrowBtnAddQ.setImageResource(R.drawable.ic_arrow_down_24);
+                }
+
+            }
+        });
+
+        findViewById(R.id.textView4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (recyclerView.getVisibility() == View.GONE) {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    arrowBtnMyQ.setImageResource(R.drawable.ic_arrow_up_24);
+                } else {
+                    recyclerView.setVisibility(View.GONE);
+                    arrowBtnMyQ.setImageResource(R.drawable.ic_arrow_down_24);
+                }
+
+            }
+        });
 
 //        dbHelper = new QuoteDBHelper(MainActivity.this, null, null, 1, quotesList);
         quotesBox = ObjectBox.getInstance().boxFor(Quote.class);
@@ -139,6 +175,11 @@ public class MainActivity extends AppCompatActivity {
         authorEt = findViewById(R.id.authorText);
         saveQuoteBtn = findViewById(R.id.saveQuoteBtn);
         recyclerView = findViewById(R.id.recyclerView);
+        addQuoteLayout = findViewById(R.id.addQuoteLayout);
+        arrowBtnAddQ = findViewById(R.id.arrowBtn);
+        arrowBtnMyQ = findViewById(R.id.arrowBtnMyQuotes);
+        saveQuoteLayout = findViewById(R.id.saveQuoteLayout);
+
     }
 
     private boolean validateInputs() {
