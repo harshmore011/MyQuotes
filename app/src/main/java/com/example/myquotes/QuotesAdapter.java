@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,23 +17,26 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import io.objectbox.Box;
 
-public class QuotesAdapter extends RecyclerView.Adapter<QuotesViewHolder> {
+public class QuotesAdapter extends RecyclerView.Adapter<QuotesViewHolder> implements Filterable {
 
     private final List<Quote> mQuotesList;
+    private List<Quote> mFilteredQuotesList;
     private final Context mContext;
     private Box<Quote> quotesBox;
 
     public QuotesAdapter (Context context, List<Quote> quotesList) {
         mContext = context;
         mQuotesList = quotesList;
+        mFilteredQuotesList = quotesList;
 
-        quotesBox = ObjectBox.getInstance().boxFor(Quote.class);
+        quotesBox = ObjectBox.get().boxFor(Quote.class);
     }
 
     @NonNull
@@ -45,9 +50,9 @@ public class QuotesAdapter extends RecyclerView.Adapter<QuotesViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull QuotesViewHolder holder, int position) {
-        holder.quoteEt.setText(new StringBuilder().append("\"").append(mQuotesList.get(position).getQuote()).append(".\"").toString());
-        holder.authorEt.setText(mQuotesList.get(position).getAuthor());
-        holder.dateEt.setText(mQuotesList.get(position).getDate());
+        holder.quoteEt.setText(new StringBuilder().append("\"").append(mFilteredQuotesList.get(position).getQuote()).append(".\"").toString());
+        holder.authorEt.setText(mFilteredQuotesList.get(position).getAuthor());
+        holder.dateEt.setText(mFilteredQuotesList.get(position).getDate());
 
             holder.editBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -72,14 +77,14 @@ public class QuotesAdapter extends RecyclerView.Adapter<QuotesViewHolder> {
                         holder.editQuoteEt.setVisibility(View.INVISIBLE);
                         holder.quoteEt.setVisibility(View.VISIBLE);
 
-                        mQuotesList.get(holder.getAdapterPosition()).setQuote(editedQuote);
-                        mQuotesList.get(holder.getAdapterPosition()).setDate(new SimpleDateFormat("dd MMM, yyyy", Locale.getDefault()).format(new Date()));
+                        mFilteredQuotesList.get(holder.getAdapterPosition()).setQuote(editedQuote);
+                        mFilteredQuotesList.get(holder.getAdapterPosition()).setDate(new SimpleDateFormat("dd MMM, yyyy", Locale.getDefault()).format(new Date()));
 
                         Quote quote = new Quote();
-                        quote.setQuote(mQuotesList.get(holder.getAdapterPosition()).getQuote());
-                        quote.setAuthor(mQuotesList.get(holder.getAdapterPosition()).getAuthor());
-                        quote.setId(mQuotesList.get(holder.getAdapterPosition()).getId());
-                        quote.setDate(mQuotesList.get(holder.getAdapterPosition()).getDate());
+                        quote.setQuote(mFilteredQuotesList.get(holder.getAdapterPosition()).getQuote());
+                        quote.setAuthor(mFilteredQuotesList.get(holder.getAdapterPosition()).getAuthor());
+                        quote.setId(mFilteredQuotesList.get(holder.getAdapterPosition()).getId());
+                        quote.setDate(mFilteredQuotesList.get(holder.getAdapterPosition()).getDate());
 
                         quotesBox.put(quote);
 
@@ -98,14 +103,14 @@ public class QuotesAdapter extends RecyclerView.Adapter<QuotesViewHolder> {
                     if (holder.getAdapterPosition() > 0) {
                         quotesBox.remove(mQuotesList.get(holder.getAdapterPosition()).getId());
 
-                        mQuotesList.remove(holder.getAdapterPosition());
+                        mFilteredQuotesList.remove(holder.getAdapterPosition());
 
                         notifyDataSetChanged();
 
                         Toast.makeText(mContext, "Quote Deleted.", Toast.LENGTH_SHORT).show();
                     } else {
                         quotesBox.removeAll();
-                        mQuotesList.clear();
+                        mFilteredQuotesList.clear();
                         notifyDataSetChanged();
                     }
                 }
@@ -115,7 +120,46 @@ public class QuotesAdapter extends RecyclerView.Adapter<QuotesViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mQuotesList.size();
+        return mFilteredQuotesList.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+
+        Filter filter = new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+
+                String textPattern = charSequence.toString().trim().toLowerCase();
+
+                mFilteredQuotesList = new ArrayList<>();
+
+                if (textPattern == null || textPattern.length() == 0) {
+                    mFilteredQuotesList.addAll(mQuotesList);
+                } else {
+
+                    for (Quote quote : mQuotesList) {
+                        if (quote.getQuote().toLowerCase().contains(textPattern) || quote.getAuthor().toLowerCase().contains(textPattern)) {
+                            mFilteredQuotesList.add(quote);
+                        }
+                    }
+
+                }
+
+                FilterResults results = new FilterResults();
+                results.values = mFilteredQuotesList;
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+//                mFilteredQuotesList = (List<Quote>) filterResults.values;
+                notifyDataSetChanged(); // Notify recycler view adapter
+            }
+        };
+
+        return filter;
     }
 }
 

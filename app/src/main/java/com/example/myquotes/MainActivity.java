@@ -2,6 +2,7 @@ package com.example.myquotes;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     EditText quoteEt, authorEt;
     Button saveQuoteBtn;
     RecyclerView recyclerView;
-    String quoteText, authorText, date;
+    String quoteText, authorText;
     TextView addQuoteLayout;
     ImageButton arrowBtnAddQ, arrowBtnMyQ;
 
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
     CardView saveQuoteLayout;
+    private boolean isSearching = false;
 //    QuoteDBHelper dbHelper;
 
     @Override
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 //        dbHelper = new QuoteDBHelper(MainActivity.this, null, null, 1, quotesList);
-        quotesBox = ObjectBox.getInstance().boxFor(Quote.class);
+        quotesBox = ObjectBox.get().boxFor(Quote.class);
 
 //        try {
 //            showQuotes(dbHelper.readQuotesFromDatabase());
@@ -191,7 +193,33 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        new MenuInflater(this).inflate(R.menu.menu, menu);
+
+        getMenuInflater().inflate(R.menu.menu, menu);
+
+        MenuItem searchItem =  menu.findItem(R.id.searchQuotes);
+
+        if (!searchItem.isActionViewExpanded())
+            searchItem.expandActionView();
+
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                isSearching = true;
+                adapter.getFilter().filter(query);
+                isSearching  = false;
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                isSearching = true;
+                adapter.getFilter().filter(newText);
+                isSearching = false;
+                return false;
+            }
+        });
 
         return super.onCreateOptionsMenu(menu);
     }
